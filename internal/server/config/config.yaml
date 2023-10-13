@@ -1,0 +1,17 @@
+db:
+  driver: mysql
+  mysql:
+    ip:
+      default: 127.0.0.1
+      env: ${WC_MYSQL_IP}
+    port:
+      default: 3306
+      env: ${WC_MYSQL_PORT}
+    username:
+      default: root
+      env: ${WC_MYSQL_USERNAME}
+    password:
+      default: 1q2w3e@4R
+      env: ${WC_MYSQL_PASSWORD}
+    db: wechat
+    params: ?charset-utf8&parseTime=True&loc=Local
