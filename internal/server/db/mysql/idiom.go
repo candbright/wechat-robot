@@ -9,6 +9,25 @@ import (
 	"gorm.io/gorm"
 )
 
+func (DB *DB) Model2Repo(data model.Idiom) repo.Idiom {
+	result := repo.Idiom{
+		Word:        data.Word,
+		Pinyin:      data.Pinyin,
+		Abbr:        data.Abbr,
+		Explanation: data.Explanation,
+	}
+
+	var quote model.Quote
+	var source model.Source
+	if err := DB.options(options.WhereId(data.Id)).Take(&quote).Error; err == nil && quote.Text != "" {
+		result.Quote = repo.Quote{Book: quote.Book, Text: quote.Text}
+	}
+	if err := DB.options(options.WhereId(data.Id)).Take(&source).Error; err == nil && source.Text != "" {
+		result.Source = repo.Source{Book: source.Book, Text: source.Text}
+	}
+	return result
+}
+
 func (DB *DB) AddIdiom(data repo.Idiom) error {
 	var before model.Idiom
 	if err := DB.Where(model.Idiom{Word: data.Word}).First(&before).Error; err == nil {
@@ -61,22 +80,16 @@ func (DB *DB) GetIdioms(opts ...options.Option) ([]repo.Idiom, error) {
 		return nil, errors.WithStack(err)
 	}
 	for _, idiom := range idioms {
-		result := repo.Idiom{
-			Word:        idiom.Word,
-			Pinyin:      idiom.Pinyin,
-			Abbr:        idiom.Abbr,
-			Explanation: idiom.Explanation,
-		}
-
-		var quote model.Quote
-		var source model.Source
-		if err := DB.options(options.WhereId(idiom.Id)).Take(&quote).Error; err == nil && quote.Text != "" {
-			result.Quote = repo.Quote{Book: quote.Book, Text: quote.Text}
-		}
-		if err := DB.options(options.WhereId(idiom.Id)).Take(&source).Error; err == nil && source.Text != "" {
-			result.Source = repo.Source{Book: source.Book, Text: source.Text}
-		}
+		result := DB.Model2Repo(idiom)
 		results = append(results, result)
 	}
 	return results, nil
+}
+
+func (DB *DB) RandomIdiom() (repo.Idiom, error) {
+	var idiom model.Idiom
+	if err := DB.Order("RAND()").Take(&idiom).Error; err != nil {
+		return repo.Idiom{}, errors.WithStack(err)
+	}
+	return DB.Model2Repo(idiom), nil
 }

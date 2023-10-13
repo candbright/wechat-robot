@@ -11,6 +11,7 @@ import (
 type DB interface {
 	AddIdiom(data repo.Idiom) error
 	GetIdioms(opts ...options.Option) ([]repo.Idiom, error)
+	RandomIdiom() (repo.Idiom, error)
 }
 
 func NewDB() DB {

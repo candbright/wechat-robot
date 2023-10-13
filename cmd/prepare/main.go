@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/candbright/wechat-robot/internal/server"
+	"github.com/candbright/wechat-robot/internal/prepare"
 )
 
 func main() {
-	err := server.Prepare()
+	err := prepare.IdiomPrepare()
 	if err != nil {
 		panic(fmt.Sprintf("%+v", err))
 	}

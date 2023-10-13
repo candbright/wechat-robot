@@ -1,4 +1,4 @@
-package server
+package prepare
 
 import (
 	_ "embed"
@@ -10,7 +10,7 @@ import (
 //go:embed res/idiom.json
 var idiomByte []byte
 
-func Prepare() error {
+func IdiomPrepare() error {
 	var idioms []repo.Idiom
 	err := json.Unmarshal(idiomByte, &idioms)
 	if err != nil {
